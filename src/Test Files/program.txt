@@ -1,0 +1,23 @@
+main {
+	var int op ;
+	var bool test ;
+	var int a ;
+	var int b ;
+
+	test := true ;
+	a := (1 + 1) ;
+	b := 2.23E-23 ;
+
+	if ((1 < 3)) {
+		a := ola() ;
+	} ;
+
+	while ((b == a)) do {
+		print (a) ;
+	} ;
+}
+
+function int compiladores (int a , bool b , int c) {
+	var int variavel_funcao ;
+	return variavel_funcao ;
+} 

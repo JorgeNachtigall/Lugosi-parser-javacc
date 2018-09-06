@@ -1,0 +1,159 @@
+PARSER_BEGIN(Lugosi)
+import java.io.*;
+public class Lugosi {
+
+  public static void main(String args[]) throws ParseException,IOException {
+    
+    Lugosi parser = new Lugosi(new FileInputStream(args[0]));
+    parser.Lugosi();
+  }
+
+}
+
+PARSER_END(Lugosi)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  <MAIN: "main">
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APARENT: "(">
+| <FPARENT: ")">
+| <VAR: "var">
+| <SEMI: ";">
+| <IF: "if">
+| <WHILE: "while">
+| <DO: "do">
+| <RETURN: "return">
+| <PRINT: "print">
+| <FUNCTION: "function">
+| <INT: "int">
+| <BOOL: "bool">
+| <TRUE: "true">
+| <FALSE: "false">
+| <COMMA: ",">
+| <ATRIB: ":=">
+}
+
+TOKEN :
+{
+ <OP: ("+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "==")>
+|<#LETRA: ["a"-"z","A"-"Z"]> 
+|<#DIGITO: ["0"-"9"]>
+|<#DIGITOS: <DIGITO>(<DIGITO>)*>
+|<#LD: <LETRA> | <DIGITO>>
+|<#FSUB: ("_"(<LD>)+)>
+|<#FOP: ("."<DIGITOS>)?>
+|<#EXPOP: ("E"("+"|"-")?<DIGITOS>)?>
+|<TOKEN_ID: <LETRA>(<LD>)*(<FSUB>)*>
+|<TOKEN_NUMLIT: <DIGITOS><FOP><EXPOP>>
+}
+
+
+
+void Lugosi () :
+{}
+{ 
+
+	Main() 
+	(Func())*
+	<EOF> 
+}
+	
+
+void Main ():
+{}
+{
+ <MAIN> <ACHAVES> 
+ 
+ VarDecl()
+ SeqComandos()
+
+ <FCHAVES>
+
+}
+
+void VarDecl ():
+{}
+{
+	(<VAR> Tipo() <TOKEN_ID> <SEMI>)*
+}
+
+void Tipo ():
+{}
+{
+	<INT> | <BOOL>
+}
+
+void SeqComandos ():
+{}
+{
+	(Comando())*
+}
+
+void Comando ():
+{}
+{
+	<TOKEN_ID> Comando2() | <IF> <APARENT> Exp() <FPARENT> <ACHAVES> SeqComandos() <FCHAVES> <SEMI> 
+						| <WHILE> <APARENT> Exp() <FPARENT> <DO> <ACHAVES> SeqComandos() <FCHAVES> <SEMI>
+						| <DO> <ACHAVES> SeqComandos() <FCHAVES> <WHILE> <APARENT> Exp() <FPARENT> <SEMI>
+						| <RETURN> Exp() <SEMI>
+						| <PRINT> <APARENT> Exp() <FPARENT> <SEMI>
+
+}
+
+void Comando2 ():
+{}
+{
+	<ATRIB> Exp() <SEMI> | <APARENT> ( ListaExp() )? <FPARENT> <SEMI>
+}
+
+void Exp():
+{}
+{
+	<APARENT> Exp() <OP> Exp() <FPARENT> | Fator()
+}
+
+void Fator():
+{}
+{
+	<TOKEN_ID> ( <APARENT> ( ListaExp() )? <FPARENT> )? | <TOKEN_NUMLIT> | <TRUE> | <FALSE>
+}
+
+void ListaExp():
+{}
+{
+	Exp() ListaExp2()
+}
+
+void ListaExp2():
+{}
+{
+	(<COMMA> Exp() ListaExp2())?
+}
+
+void Func():
+{}
+{
+	<FUNCTION> Tipo() <TOKEN_ID> <APARENT> ( ListaArg() )? <FPARENT> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+}
+
+void ListaArg():
+{}
+{
+	Tipo() <TOKEN_ID> ListaArg2()
+}
+
+void ListaArg2():
+{}
+{
+	(<COMMA> Tipo() <TOKEN_ID> ListaArg2())?
+}

@@ -1,0 +1,10 @@
+main {
+    var int a1 ;
+    var int b2 ;
+    var bool c3 ;
+    a1 := 10 ;
+    b2 := 20 ;
+    if ((( 2 * a1) == b2 )) {
+        c3 := true ;
+    } ;
+}
